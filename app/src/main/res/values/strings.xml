@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">CupeiroC_U4</string>
+    <string name="inicio.lbl_titulo">Asteroides</string>
+    <string name="inicio.play">JUGAR</string>
+    <string name="inicio.config">CONFIGURAR</string>
+    <string name="inicio.about">ACERCA DE</string>
+    <string name="inicio.puntuaciones">PUNTUACIONES</string>
+    <string name="action_settings">Configuración</string>
+    <string name="text_about">Este programa ha sido desarrollado como
+        ejemplo en el curso de Android para demostrar cómo se pueden lanzar
+        nuevas actividades desde la actividad principal.</string>
+    <string name="menu_main.title_pref">Preferencias</string>
+    <string name="menu_main.title_exit">Salida</string>
+    <string name="menu_main.title_buscar">Buscar</string>
+    <string name="menu_main.info">Info</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF9800</color>
+    <color name="colorPrimaryDark">#E65100</color>
+    <color name="colorAccent">#5387BD</color>
+    <color name="colorBackgroundActivity">#FFE0B2</color>
+    <color name="selectedColor">#FFC107</color>
+    <color name="inicio.titulo">#FFC107</color>
+    <color name="normalColor">#FFE0B2</color>
+</resources>

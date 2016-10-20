@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CupeiroC_U4</string>
+    <string name="inicio.lbl_titulo">Asteroids</string>
+    <string name="inicio.play">PLAY</string>
+    <string name="inicio.config">CONFIGURE</string>
+    <string name="inicio.about">ABOUT</string>
+    <string name="inicio.puntuaciones">SCORES</string>
+    <string name="action_settings">Configuration</string>
+    <string name="text_about">This program has been development as
+        example of an Android Course to demonstrate how you can
+        execute new activities from the main activity.</string>
+    <string name="menu_main.title_pref">Preferences</string>
+    <string name="menu_main.title_exit">Exit</string>
+    <string name="menu_main.title_buscar">Search</string>
+</resources>

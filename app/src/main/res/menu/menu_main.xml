@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app = "http://schemas.android.com/apk/res-auto">
+    <item android:title="@string/menu_main.title_pref"
+        android:id="@+id/menu_pref"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:orderInCategory="5"
+        app:showAsAction = "always|collapseActionView"/>
+    <item android:title="@string/menu_main.title_exit"
+        android:id="@+id/menu_exit"
+        android:icon="@drawable/ic_exit"
+        android:orderInCategory="150"
+        app:showAsAction = "always|collapseActionView"/>
+</menu>
