@@ -133,8 +133,6 @@ public class VistaJuego extends View implements SensorEventListener {
         nave = new Grafico(this, drawableNave);
         misiles = new ArrayList<Grafico>();
         tiempoMisiles = new ArrayList<Integer>();
-        asteroides = new ArrayList<Grafico>();
-        misiles.toArray();
         for (int i = 0; i < numAsteroides; i++) {
             Grafico asteroide = new Grafico(this, drawableAsteroide);
             asteroide.setIncY(Math.random() * 4 - 2);
