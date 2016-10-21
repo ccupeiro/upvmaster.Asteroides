@@ -1,6 +1,11 @@
 package org.masterupv.carloscupeiro.asteroides.actividades;
 
 import android.content.Intent;
+import android.gesture.Gesture;
+import android.gesture.GestureLibraries;
+import android.gesture.GestureLibrary;
+import android.gesture.GestureOverlayView;
+import android.gesture.Prediction;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.content.SharedPreferences;
@@ -19,8 +24,11 @@ import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuaciones;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesArray;
 import org.masterupv.carloscupeiro.asteroides.R;
 
-public class MainActivity extends AppCompatActivity{
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements GestureOverlayView.OnGesturePerformedListener {
     static AlmacenPuntuaciones almacen;
+    private GestureLibrary libreria;
     private MediaPlayer mp_general;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +75,13 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+        //Gestos
+        libreria = GestureLibraries.fromRawResource(this, R.raw.gestures);
+        if (!libreria.load()) {
+            finish();
+        }
+        GestureOverlayView gesturesView = (GestureOverlayView) findViewById(R.id.gestures);
+        gesturesView.addOnGesturePerformedListener(this);
         //Musica
         mp_general = MediaPlayer.create(this, R.raw.audio_general);
         mp_general.start();
@@ -146,5 +161,22 @@ public class MainActivity extends AppCompatActivity{
     public void lanzarPuntuaciones(View view){
         Intent i = new Intent(this, PuntuacionesActivity.class);
         startActivity(i);
+    }
+
+    @Override
+    public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
+        ArrayList<Prediction> predictions=libreria.recognize(gesture);
+        if (predictions.size()>0) {
+            String comando = predictions.get(0).name;
+            if (comando.equals("play")){
+                lanzarPlay(null);
+            } else if (comando.equals("configurar")){
+                lanzarConfiguracion(null);
+            } else if (comando.equals("acerca_de")){
+                lanzarAcercaDe(null);
+            } else if (comando.equals("cancelar")){
+                finish();
+            }
+        }
     }
 }
