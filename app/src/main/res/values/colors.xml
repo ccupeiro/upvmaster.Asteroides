@@ -7,4 +7,5 @@
     <color name="selectedColor">#FFC107</color>
     <color name="inicio.titulo">#FFC107</color>
     <color name="normalColor">#FFE0B2</color>
+    <color name="gray">#D3D3D3</color>
 </resources>

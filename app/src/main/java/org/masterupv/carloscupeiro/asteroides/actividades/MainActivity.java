@@ -168,13 +168,13 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
         ArrayList<Prediction> predictions=libreria.recognize(gesture);
         if (predictions.size()>0) {
             String comando = predictions.get(0).name;
-            if (comando.equals("play")){
+            if (comando.equals("jugar")){
                 lanzarPlay(null);
             } else if (comando.equals("configurar")){
                 lanzarConfiguracion(null);
             } else if (comando.equals("acerca_de")){
                 lanzarAcercaDe(null);
-            } else if (comando.equals("cancelar")){
+            } else if (comando.equals("salir")){
                 finish();
             }
         }
