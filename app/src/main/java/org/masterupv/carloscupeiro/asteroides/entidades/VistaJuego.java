@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.PathShape;
@@ -16,6 +17,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -23,6 +25,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 
 import org.masterupv.carloscupeiro.asteroides.R;
 
@@ -70,10 +73,11 @@ public class VistaJuego extends View implements SensorEventListener {
     // //// MULTIMEDIA //////
     SoundPool soundPool;
     int idDisparo, idExplosion;
+    View viewVistaJuego;
 
     public VistaJuego(Context context, AttributeSet attrs) {
         super(context, attrs);
-
+        viewVistaJuego = this;
         if(thread== null || !thread.isAlive()){
             thread = new ThreadJuego();
         }
@@ -126,11 +130,14 @@ public class VistaJuego extends View implements SensorEventListener {
             //Nave
             drawableNave = ContextCompat.getDrawable(getContext(), R.drawable.nave);
             //Misil
-            drawableMisil = ContextCompat.getDrawable(getContext(), R.drawable.misil1);
+            ImageView misilImage = new ImageView(context);
+            misilImage.setBackgroundResource(R.drawable.misil_animado);
+            drawableMisil = misilImage.getBackground();
             //Global
             setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
         nave = new Grafico(this, drawableNave);
+        asteroides = new ArrayList<Grafico>();
         misiles = new ArrayList<Grafico>();
         tiempoMisiles = new ArrayList<Integer>();
         for (int i = 0; i < numAsteroides; i++) {
@@ -380,6 +387,9 @@ public class VistaJuego extends View implements SensorEventListener {
         nave.dibujaGrafico(canvas);
         synchronized(misiles){
             for (Grafico misil : misiles) {
+                if (misil.getDrawable() instanceof AnimationDrawable) {
+                    ((AnimationDrawable) drawableMisil).start();
+                }
                 misil.dibujaGrafico(canvas);
             }
         }
