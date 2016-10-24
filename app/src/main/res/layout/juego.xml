@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    <org.masterupv.carloscupeiro.asteroides.entidades.VistaJuego
+    <org.masterupv.carloscupeiro.asteroides.vistas.VistaJuego
         android:id="@+id/VistaJuego"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

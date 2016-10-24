@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import org.masterupv.carloscupeiro.asteroides.R;
-import org.masterupv.carloscupeiro.asteroides.entidades.VistaJuego;
+import org.masterupv.carloscupeiro.asteroides.vistas.VistaJuego;
 
 public class JuegoActivity extends AppCompatActivity {
 

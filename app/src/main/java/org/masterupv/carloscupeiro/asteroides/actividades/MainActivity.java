@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
     static AlmacenPuntuaciones almacen;
     private GestureLibrary libreria;
     private MediaPlayer mp_general;
+
+    private boolean musica_activa = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +47,9 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
         btn_play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mp_play.start();
+                if(musica_activa){
+                    mp_play.start();
+                }
                 lanzarPlay(null);
             }
         });
@@ -84,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
         gesturesView.addOnGesturePerformedListener(this);
         //Musica
         mp_general = MediaPlayer.create(this, R.raw.audio_general);
-        mp_general.start();
     }
 
     @Override protected void onSaveInstanceState(Bundle guardarEstado) {
@@ -105,13 +108,22 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
     @Override
     protected void onResume() {
         super.onResume();
-        mp_general.start();
+        SharedPreferences pref =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        if(pref.getBoolean("musica",true)){
+            musica_activa = true;
+            mp_general.start();
+        }else{
+            musica_activa = false;
+        }
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mp_general.pause();
+        if(musica_activa)
+            mp_general.pause();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.masterupv.carloscupeiro.asteroides.entidades;
+package org.masterupv.carloscupeiro.asteroides.vistas;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import org.masterupv.carloscupeiro.asteroides.R;
+import org.masterupv.carloscupeiro.asteroides.entidades.Grafico;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.List;
  */
 
 public class VistaJuego extends View implements SensorEventListener {
+    private boolean musica_activa = true;
     // //// THREAD Y TIEMPO //////
     // Thread encargado de procesar el juego
     private ThreadJuego thread;
@@ -149,9 +151,15 @@ public class VistaJuego extends View implements SensorEventListener {
             asteroides.add(asteroide);
         }
         //Musica
-        soundPool = new SoundPool( 5, AudioManager.STREAM_MUSIC , 0);
-        idDisparo = soundPool.load(context, R.raw.disparo, 0);
-        idExplosion = soundPool.load(context, R.raw.explosion, 0);
+        if(pref.getBoolean("musica",true)){
+            musica_activa = true;
+            soundPool = new SoundPool( 5, AudioManager.STREAM_MUSIC , 0);
+            idDisparo = soundPool.load(context, R.raw.disparo, 0);
+            idExplosion = soundPool.load(context, R.raw.explosion, 0);
+        }else{
+            musica_activa = false;
+        }
+
 
     }
 
@@ -210,12 +218,16 @@ public class VistaJuego extends View implements SensorEventListener {
 
     private void destruyeAsteroide(int i) {
         synchronized(asteroides) {
-            soundPool.play(idExplosion, 1, 1, 0, 0, 1.5f);
+            if(musica_activa){
+                soundPool.play(idExplosion, 1, 1, 0, 0, 1.5f);
+            }
             asteroides.remove(i);
         }
     }
     private void activaMisil() {
-        soundPool.play(idDisparo, 1, 1, 1, 0, 2.0f);
+        if(musica_activa){
+            soundPool.play(idDisparo, 1, 1, 1, 0, 2.0f);
+        }
         Grafico misil = new Grafico(this, drawableMisil);
         misil.setCenX(nave.getCenX());
         misil.setCenY(nave.getCenY());
