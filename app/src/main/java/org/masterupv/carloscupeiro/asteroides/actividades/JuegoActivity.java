@@ -30,7 +30,7 @@ public class JuegoActivity extends AppCompatActivity {
         super.onPause();
         vistaJuego.getThread().pausar();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(pref.getBoolean("sensores",true)){
+        if(pref.getBoolean("sensores",false)){
 
             vistaJuego.desactivarSensores();
         }
@@ -39,7 +39,7 @@ public class JuegoActivity extends AppCompatActivity {
         super.onResume();
         vistaJuego.getThread().reanudar();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(pref.getBoolean("sensores",true)){
+        if(pref.getBoolean("sensores",false)){
 
             vistaJuego.activarSensores();
         }
