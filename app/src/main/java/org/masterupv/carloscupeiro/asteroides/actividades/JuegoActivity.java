@@ -24,6 +24,7 @@ public class JuegoActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         decorView.setSystemUiVisibility(uiOptions);
         vistaJuego = (VistaJuego) findViewById(R.id.VistaJuego);
+        vistaJuego.setPadre(this);
     }
 
     @Override protected void onPause() {

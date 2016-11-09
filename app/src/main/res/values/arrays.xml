@@ -10,6 +10,16 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+    <string-array name="tiposGuardado">
+        <item>Array</item>
+        <item>Preferencias</item>
+        <item>Fichero en memoria interna”.</item>
+    </string-array>
+    <string-array name="tiposGuardadoValores">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
     <string-array name="tiposConexion">
         <item>Bluetooth</item>
         <item>Wi-Fi</item>

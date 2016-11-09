@@ -1,12 +1,17 @@
 package org.masterupv.carloscupeiro.asteroides.actividades;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
 import android.media.MediaPlayer;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -23,10 +28,16 @@ import android.widget.Toast;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuaciones;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesArray;
 import org.masterupv.carloscupeiro.asteroides.R;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesFicheroExterno;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesFicheroInterno;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesPreferencias;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements GestureOverlayView.OnGesturePerformedListener {
+    public static final int COD_PLAY = 1234;
+    private static final int SOLICITUD_PERMISO_ESCRITURA_EXTERNA = 0;
+
     static AlmacenPuntuaciones almacen;
     private GestureLibrary libreria;
     private MediaPlayer mp_general;
@@ -37,7 +48,37 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final MediaPlayer mp_play = MediaPlayer.create(this, R.raw.play);
-        almacen = new AlmacenPuntuacionesArray();
+        SharedPreferences pref =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        int op_guardado;
+        try{
+        op_guardado = Integer.valueOf(pref.getString("graficos", "1"));
+        }catch(ClassCastException e){
+            op_guardado = 1;
+        }catch(NumberFormatException e){
+            op_guardado = 1;
+        }
+        switch (op_guardado){
+            case 0:
+                almacen = new AlmacenPuntuacionesArray();
+                break;
+            case 1:
+                almacen = new AlmacenPuntuacionesPreferencias(this);
+                break;
+            case 2:
+                almacen = new AlmacenPuntuacionesFicheroInterno(this);
+                break;
+            case 3:
+                //Pedir Permisos
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    almacen = new AlmacenPuntuacionesFicheroExterno(this);
+                }else{
+                    solicitarPermisoExternalStorage();
+                }
+
+                break;
+        }
+
         TextView tv_titulo = (TextView) findViewById(R.id.titulo);
         Animation anim_titulo = AnimationUtils.loadAnimation(this,R.anim.giro_con_zoom);
         tv_titulo.startAnimation(anim_titulo);
@@ -88,6 +129,36 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
         gesturesView.addOnGesturePerformedListener(this);
         //Musica
         mp_general = MediaPlayer.create(this, R.raw.audio_general);
+    }
+
+    void solicitarPermisoExternalStorage() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Snackbar.make (this.getCurrentFocus(), "", Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, SOLICITUD_PERMISO_ESCRITURA_EXTERNA);
+                }
+            }).show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, SOLICITUD_PERMISO_ESCRITURA_EXTERNA);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case SOLICITUD_PERMISO_ESCRITURA_EXTERNA:
+                if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    almacen = new AlmacenPuntuacionesFicheroExterno(this);
+                } else {
+                    Snackbar.make(this.getCurrentFocus(), "No se puede utilizar guardar en el externo, se almacena en Prefrencias", Snackbar.LENGTH_SHORT).show();
+                    almacen = new AlmacenPuntuacionesPreferencias(this);
+                }
+                break;
+            default:
+                finish();
+                break;
+        }
     }
 
     @Override protected void onSaveInstanceState(Bundle guardarEstado) {
@@ -148,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
 
     public void lanzarPlay(View view){
         Intent i = new Intent(this, JuegoActivity.class);
-        startActivity(i);
+        startActivityForResult(i,COD_PLAY);
     }
 
     public void lanzarAcercaDe(View view){
@@ -189,6 +260,19 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
             } else if (comando.equals("salir")){
                 finish();
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult (int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==COD_PLAY && resultCode==RESULT_OK && data!=null) {
+            int puntuacion = data.getExtras().getInt("puntuacion");
+            String nombre = "Yo";
+            // Mejor leer nombre desde un AlertDialog.Builder o preferencias
+            almacen.guardarPuntuacion(puntuacion, nombre,
+                    System.currentTimeMillis());
+            lanzarPuntuaciones(null);
         }
     }
 }

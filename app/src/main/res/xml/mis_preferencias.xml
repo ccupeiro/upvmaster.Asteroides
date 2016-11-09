@@ -24,6 +24,13 @@
         android:title="Número de Fragmentos"
         android:summary="En cuantos trozos se divide un asteroide"
         android:defaultValue="3"/>
+    <ListPreference
+        android:key="puntuaciones"
+        android:title="Tipo de guardado Puntuaciones"
+        android:summary="Se escoge donde se guardaran las puntuaciones"
+        android:entries="@array/tiposGuardado"
+        android:entryValues="@array/tiposGuardadoValores"
+        android:defaultValue="1"/>
     <PreferenceCategory android:title="Modo multijugador">
         <CheckBoxPreference
             android:key="multijugador"

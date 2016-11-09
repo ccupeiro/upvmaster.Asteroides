@@ -1,6 +1,8 @@
 package org.masterupv.carloscupeiro.asteroides.vistas;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,6 +19,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
@@ -78,6 +81,9 @@ public class VistaJuego extends View implements SensorEventListener {
     SoundPool soundPool;
     int idDisparo, idExplosion;
     View viewVistaJuego;
+    // //// PUNTUACION //////
+    private int puntuacion = 0;
+    private Activity padre;
 
     public VistaJuego(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -176,6 +182,19 @@ public class VistaJuego extends View implements SensorEventListener {
 
     }
 
+    public void setPadre(Activity padre) {
+        this.padre = padre;
+    }
+
+    private void salir() {
+        Bundle bundle = new Bundle();
+        bundle.putInt("puntuacion", puntuacion);
+        Intent intent = new Intent();
+        intent.putExtras(bundle);
+        padre.setResult(Activity.RESULT_OK, intent);
+        padre.finish();
+    }
+
     protected synchronized void actualizaFisica() {
         long ahora = System.currentTimeMillis();
         if (ultimoProceso + PERIODO_PROCESO > ahora) {
@@ -222,6 +241,11 @@ public class VistaJuego extends View implements SensorEventListener {
                 borrar_misil(pos);
             }
         }
+        for (Grafico asteroide : asteroides) {
+            if (asteroide.verificaColision(nave)) {
+                salir();
+            }
+        }
     }
 
     private synchronized void borrar_misil(int i){
@@ -253,6 +277,10 @@ public class VistaJuego extends View implements SensorEventListener {
                 soundPool.play(idExplosion, 1, 1, 0, 0, 1.5f);
             }
             asteroides.remove(i);
+        }
+        puntuacion += 1000;
+        if (asteroides.isEmpty()) {
+            salir();
         }
     }
     private void activaMisil() {
