@@ -1,6 +1,7 @@
 package org.masterupv.carloscupeiro.asteroides.actividades;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.gesture.Gesture;
@@ -12,25 +13,34 @@ import android.media.MediaPlayer;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuaciones;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesArray;
 import org.masterupv.carloscupeiro.asteroides.R;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesFicheroExtApl;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesFicheroExterno;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesFicheroInterno;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesPreferencias;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesRecursoAssets;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesRecursoRaw;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesSQLite;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesSocket;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesXML_SAX;
 
 import java.util.ArrayList;
 
@@ -50,35 +60,6 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
         final MediaPlayer mp_play = MediaPlayer.create(this, R.raw.play);
         SharedPreferences pref =
                 PreferenceManager.getDefaultSharedPreferences(this);
-        int op_guardado;
-        try{
-        op_guardado = Integer.valueOf(pref.getString("graficos", "1"));
-        }catch(ClassCastException e){
-            op_guardado = 1;
-        }catch(NumberFormatException e){
-            op_guardado = 1;
-        }
-        switch (op_guardado){
-            case 0:
-                almacen = new AlmacenPuntuacionesArray();
-                break;
-            case 1:
-                almacen = new AlmacenPuntuacionesPreferencias(this);
-                break;
-            case 2:
-                almacen = new AlmacenPuntuacionesFicheroInterno(this);
-                break;
-            case 3:
-                //Pedir Permisos
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    almacen = new AlmacenPuntuacionesFicheroExterno(this);
-                }else{
-                    solicitarPermisoExternalStorage();
-                }
-
-                break;
-        }
-
         TextView tv_titulo = (TextView) findViewById(R.id.titulo);
         Animation anim_titulo = AnimationUtils.loadAnimation(this,R.anim.giro_con_zoom);
         tv_titulo.startAnimation(anim_titulo);
@@ -119,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
                 lanzarPuntuaciones(null);
             }
         });
-
         //Gestos
         libreria = GestureLibraries.fromRawResource(this, R.raw.gestures);
         if (!libreria.load()) {
@@ -176,11 +156,67 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
         }
     }
 
+    private void guardadoPuntucaiones(SharedPreferences pref){
+        int op_guardado;
+        try{
+            op_guardado = Integer.valueOf(pref.getString("puntuaciones", "1"));
+        }catch(ClassCastException e){
+            op_guardado = 1;
+        }catch(NumberFormatException e){
+            op_guardado = 1;
+        }
+        switch (op_guardado){
+            case 0:
+                almacen = new AlmacenPuntuacionesArray();
+                break;
+            case 1:
+                almacen = new AlmacenPuntuacionesPreferencias(this);
+                break;
+            case 2:
+                almacen = new AlmacenPuntuacionesFicheroInterno(this);
+                break;
+            case 3:
+                //Pedir Permisos
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    almacen = new AlmacenPuntuacionesFicheroExterno(this);
+                }else{
+                    solicitarPermisoExternalStorage();
+                }
+
+                break;
+            case 4:
+                //Pedir Permisos
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    almacen = new AlmacenPuntuacionesFicheroExtApl(this);
+                }else{
+                    solicitarPermisoExternalStorage();
+                }
+
+                break;
+            case 5:
+                almacen = new AlmacenPuntuacionesRecursoRaw(this);
+                break;
+            case 6:
+                almacen = new AlmacenPuntuacionesRecursoAssets(this);
+                break;
+            case 7:
+                almacen = new AlmacenPuntuacionesXML_SAX(this);
+                break;
+            case 8:
+                almacen = new AlmacenPuntuacionesSQLite(this);
+                break;
+            case 9:
+                almacen = new AlmacenPuntuacionesSocket();
+                break;
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         SharedPreferences pref =
                 PreferenceManager.getDefaultSharedPreferences(this);
+        guardadoPuntucaiones(pref);
         if(pref.getBoolean("musica",true)){
             musica_activa = true;
             mp_general.start();
@@ -267,12 +303,27 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
     protected void onActivityResult (int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==COD_PLAY && resultCode==RESULT_OK && data!=null) {
-            int puntuacion = data.getExtras().getInt("puntuacion");
-            String nombre = "Yo";
-            // Mejor leer nombre desde un AlertDialog.Builder o preferencias
-            almacen.guardarPuntuacion(puntuacion, nombre,
-                    System.currentTimeMillis());
-            lanzarPuntuaciones(null);
+            final int puntuacion = data.getExtras().getInt("puntuacion");
+            //TODO poner la captura del nombre
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Pon tu nombre");
+            final EditText input = new EditText(this);
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
+
+            // Set up the buttons
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String nombre = input.getText().toString();
+                    almacen.guardarPuntuacion(puntuacion, nombre,
+                            System.currentTimeMillis());
+                    lanzarPuntuaciones(null);
+                }
+            });
+            builder.setCancelable(false);
+            builder.show();
         }
     }
 }

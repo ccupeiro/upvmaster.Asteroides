@@ -13,12 +13,28 @@
     <string-array name="tiposGuardado">
         <item>Array</item>
         <item>Preferencias</item>
-        <item>Fichero en memoria interna”.</item>
+        <item>Fichero en memoria interna</item>
+        <item>Fichero en memoria externa</item>
+        <item>Fichero en memoria en Carpeta</item>
+        <item>Lectura fichero RAW</item>
+        <item>Lectura fichero ASSETS</item>
+        <item>Almacen en XML</item>
+        <item>Almacen en SQLite</item>
+        <item>Almacen por Socket</item>
+        <item>Almacen Servidor PHP</item>
     </string-array>
     <string-array name="tiposGuardadoValores">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
     </string-array>
     <string-array name="tiposConexion">
         <item>Bluetooth</item>

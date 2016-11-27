@@ -3,9 +3,10 @@ package org.masterupv.carloscupeiro.asteroides.entidades;
 import android.content.Context;
 import android.util.Log;
 
+import org.masterupv.carloscupeiro.asteroides.R;
+
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,26 +15,18 @@ import java.util.List;
  * Created by Carlos on 09/11/2016.
  */
 
-public class AlmacenPuntuacionesFicheroInterno implements AlmacenPuntuaciones {
-    private static String FICHERO = "carpeta/puntuaciones.txt";
+public class AlmacenPuntuacionesRecursoAssets implements AlmacenPuntuaciones {
     private Context context;
-    public AlmacenPuntuacionesFicheroInterno(Context context) {
+    public AlmacenPuntuacionesRecursoAssets(Context context) {
         this.context = context;
     }
     public void guardarPuntuacion(int puntos, String nombre, long fecha){
-        try {
-            FileOutputStream f = context.openFileOutput(FICHERO, Context.MODE_APPEND);
-            String texto = puntos + " " + nombre + "\n";
-            f.write(texto.getBytes());
-            f.close();
-        } catch (Exception e) {
-            Log.e("Asteroides", e.getMessage(), e);
-        }
+
     }
     public List<String> listaPuntuaciones(int cantidad) {
         List<String> result = new ArrayList<String>();
         try {
-            FileInputStream f = context.openFileInput(FICHERO);
+            InputStream f = context.getAssets().open("carpeta/puntuaciones.txt");
             BufferedReader entrada = new BufferedReader(new InputStreamReader(f));
             int n = 0;
             String linea;

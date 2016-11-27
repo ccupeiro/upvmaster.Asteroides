@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -16,10 +17,11 @@ import java.util.List;
  * Created by Carlos on 09/11/2016.
  */
 
-public class AlmacenPuntuacionesFicheroExterno implements AlmacenPuntuaciones {
-    private static String FICHERO = Environment. getExternalStorageDirectory() + "/carpeta/puntuaciones.txt";
+public class AlmacenPuntuacionesFicheroExtApl implements AlmacenPuntuaciones {
+    private static String RUTA = Environment.getExternalStorageDirectory() + "/Android/data/org.example.asteroides/files/";
+    private static String FICHERO = "carpeta/puntuaciones.txt";
     private Context context;
-    public AlmacenPuntuacionesFicheroExterno(Context context) {
+    public AlmacenPuntuacionesFicheroExtApl(Context context) {
         this.context = context;
     }
     public void guardarPuntuacion(int puntos, String nombre, long fecha){
@@ -29,7 +31,11 @@ public class AlmacenPuntuacionesFicheroExterno implements AlmacenPuntuaciones {
             return;
         }
         try {
-            FileOutputStream f = new FileOutputStream(FICHERO, true);
+            File ruta = new File(RUTA);
+            if (!ruta.exists()) {
+                ruta.mkdirs();
+            }
+            FileOutputStream f = new FileOutputStream(RUTA+FICHERO, true);
             String texto = puntos + " " + nombre + "\n";
             f.write(texto.getBytes());
             f.close();
