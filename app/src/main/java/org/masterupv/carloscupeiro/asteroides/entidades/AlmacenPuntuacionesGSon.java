@@ -1,6 +1,7 @@
 package org.masterupv.carloscupeiro.asteroides.entidades;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.util.Xml;
 
@@ -32,6 +33,8 @@ import javax.xml.parsers.SAXParserFactory;
 public class AlmacenPuntuacionesGSon implements AlmacenPuntuaciones {
     private String string; //Almacena puntuaciones en formato JSON
     private Gson gson = new Gson();
+    private static String PREFERENCIAS = "puntuaciones_json";
+    private Context context;
     private Type type = new TypeToken<Clase>() {
     }.getType();
 
@@ -40,23 +43,37 @@ public class AlmacenPuntuacionesGSon implements AlmacenPuntuaciones {
         private boolean guardado;
     }
 
-    public AlmacenPuntuacionesGSon() {
-        guardarPuntuacion(45000, "Mi nombre", System.currentTimeMillis());
-        guardarPuntuacion(31000, "Otro nombre", System.currentTimeMillis());
+    public AlmacenPuntuacionesGSon(Context context) {
+        /*guardarPuntuacion(45000, "Mi nombre", System.currentTimeMillis());
+        guardarPuntuacion(31000, "Otro nombre", System.currentTimeMillis());*/
+        this.context = context;
+    }
+
+    private void guardarString(String string) {
+        SharedPreferences preferencias =context.getSharedPreferences(
+                PREFERENCIAS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferencias.edit();
+        editor.putString("gson", string);
+        editor.apply();
+    }
+
+    private String leerString() {
+        SharedPreferences preferencias =context.getSharedPreferences( PREFERENCIAS, Context.MODE_PRIVATE);
+        return preferencias.getString("gson", "");
     }
 
     @Override
     public void guardarPuntuacion(int puntos, String nombre, long fecha) {
-        //string = leerString();
+        string = leerString();
         Clase objeto = gson.fromJson(string, type);
         objeto.puntuaciones.add(new Puntuacion(puntos, nombre, fecha));
         string = gson.toJson(objeto, type);
-        //guardarString(string);
+        guardarString(string);
     }
 
     @Override
     public List<String> listaPuntuaciones(int cantidad) {
-        //string = leerString();
+        string = leerString();
         Clase objeto = gson.fromJson(string, type);
         List<String> salida = new ArrayList<>();
         for (Puntuacion puntuacion : objeto.puntuaciones) {

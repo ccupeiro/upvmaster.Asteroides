@@ -1,5 +1,8 @@
 package org.masterupv.carloscupeiro.asteroides.entidades;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,25 +16,39 @@ import java.util.Vector;
  */
 
 public class AlmacenPuntuacionesJSon implements AlmacenPuntuaciones {
-    private String string; //Almacena puntuaciones en formato JSON
-
-    public AlmacenPuntuacionesJSon() {
-        guardarPuntuacion(45000, "Mi nombre", System.currentTimeMillis());
-        guardarPuntuacion(31000, "Otro nombre", System.currentTimeMillis());
+    private static String PREFERENCIAS = "puntuaciones_json";
+    private Context context;
+    public AlmacenPuntuacionesJSon(Context context) {
+        /*guardarPuntuacion(45000, "Mi nombre", System.currentTimeMillis());
+        guardarPuntuacion(31000, "Otro nombre", System.currentTimeMillis());*/
+        this.context= context;
     }
 
     @Override
     public void guardarPuntuacion(int puntos, String nombre, long fecha) {
-        //string = leerString();
+        String string = leerFichero();
         List<Puntuacion> puntuaciones = leerJSon(string);
         puntuaciones.add(new Puntuacion(puntos, nombre, fecha));
         string = guardarJSon(puntuaciones);
-        //guardarString(string);
+        guardarString(string);
+    }
+
+    private void guardarString(String string) {
+        SharedPreferences preferencias =context.getSharedPreferences(
+                PREFERENCIAS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferencias.edit();
+        editor.putString("json", string);
+        editor.apply();
+    }
+
+    private String leerFichero() {
+        SharedPreferences preferencias =context.getSharedPreferences( PREFERENCIAS, Context.MODE_PRIVATE);
+        return preferencias.getString("json", "");
     }
 
     @Override
-    public Vector<String> listaPuntuaciones(int cantidad) {
-        //string = leerFichero();
+    public List<String> listaPuntuaciones(int cantidad) {
+        String string = leerFichero();
         List<Puntuacion> puntuaciones = leerJSon(string);
         Vector<String> salida = new Vector<>();
         for (Puntuacion puntuacion : puntuaciones) {
@@ -40,6 +57,8 @@ public class AlmacenPuntuacionesJSon implements AlmacenPuntuaciones {
         return salida;
     }
 
+    
+    
     private String guardarJSon(List<Puntuacion> puntuaciones) {
         String string = "";
         try {

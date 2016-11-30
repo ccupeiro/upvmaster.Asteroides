@@ -52,12 +52,14 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements GestureOverlayView.OnGesturePerformedListener {
     public static final int COD_PLAY = 1234;
     private static final int SOLICITUD_PERMISO_ESCRITURA_EXTERNA = 0;
+    private static final int SOLICITUD_PERMISO_INTERNET = 1;
     private static final String RUTA_UPV="http://158.42.146.127/puntuaciones";
-    private static final String RUTA_MIA="http://158.42.146.127/puntuaciones";
+    private static final String RUTA_MIA="http://upvccupeiro.esy.es/puntuaciones";
 
     static AlmacenPuntuaciones almacen;
     private GestureLibrary libreria;
     private MediaPlayer mp_general;
+    int op_guardado;
 
     private boolean musica_activa = true;
     @Override
@@ -133,12 +135,37 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
         }
     }
 
+    void solicitarPermisoInternet() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET)) {
+            Snackbar.make (this.getCurrentFocus(), "", Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.INTERNET}, SOLICITUD_PERMISO_INTERNET);
+                }
+            }).show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, SOLICITUD_PERMISO_INTERNET);
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case SOLICITUD_PERMISO_ESCRITURA_EXTERNA:
                 if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    almacen = new AlmacenPuntuacionesFicheroExterno(this);
+                    SharedPreferences pref =
+                            PreferenceManager.getDefaultSharedPreferences(this);
+                    guardadoPuntucaiones(pref);
+                } else {
+                    Snackbar.make(this.getCurrentFocus(), "No se puede utilizar guardar en el externo, se almacena en Prefrencias", Snackbar.LENGTH_SHORT).show();
+                    almacen = new AlmacenPuntuacionesPreferencias(this);
+                }
+                break;
+            case SOLICITUD_PERMISO_INTERNET:
+                if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    SharedPreferences pref =
+                            PreferenceManager.getDefaultSharedPreferences(this);
+                    guardadoPuntucaiones(pref);
                 } else {
                     Snackbar.make(this.getCurrentFocus(), "No se puede utilizar guardar en el externo, se almacena en Prefrencias", Snackbar.LENGTH_SHORT).show();
                     almacen = new AlmacenPuntuacionesPreferencias(this);
@@ -166,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
     }
 
     private void guardadoPuntucaiones(SharedPreferences pref){
-        int op_guardado;
         try{
             op_guardado = Integer.valueOf(pref.getString("puntuaciones", "1"));
         }catch(ClassCastException e){
@@ -200,7 +226,6 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
                 }else{
                     solicitarPermisoExternalStorage();
                 }
-
                 break;
             case 5:
                 almacen = new AlmacenPuntuacionesRecursoRaw(this);
@@ -215,19 +240,31 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
                 almacen = new AlmacenPuntuacionesSQLite(this);
                 break;
             case 9:
-                almacen = new AlmacenPuntuacionesSocket();
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    almacen = new AlmacenPuntuacionesSocket();
+                }else{
+                    solicitarPermisoInternet();
+                }
                 break;
             case 10:
-                almacen = new AlmacenPuntuacionesSW_PHP(RUTA_UPV);
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    almacen = new AlmacenPuntuacionesSW_PHP(RUTA_UPV);
+                }else{
+                    solicitarPermisoInternet();
+                }
                 break;
             case 11:
-                almacen = new AlmacenPuntuacionesSW_PHP(RUTA_MIA);
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    almacen = new AlmacenPuntuacionesSW_PHP(RUTA_MIA);
+                }else{
+                    solicitarPermisoInternet();
+                }
                 break;
             case 12:
-                almacen = new AlmacenPuntuacionesGSon();
+                almacen = new AlmacenPuntuacionesGSon(this);
                 break;
             case 13:
-                almacen = new AlmacenPuntuacionesJSon();
+                almacen = new AlmacenPuntuacionesJSon(this);
                 break;
             case 14:
                 almacen = new AlmacenPuntuacionesSQLiteRel(this);
