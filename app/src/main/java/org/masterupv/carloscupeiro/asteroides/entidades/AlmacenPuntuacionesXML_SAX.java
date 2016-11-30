@@ -68,11 +68,6 @@ public class AlmacenPuntuacionesXML_SAX implements AlmacenPuntuaciones{
     }
 
     private class ListaPuntuaciones{
-        private class Puntuacion {
-            int puntos;
-            String nombre;
-            long fecha;
-        }
         class ManejadorXML extends DefaultHandler {
             private StringBuilder cadena;
             private Puntuacion puntuacion;
@@ -86,7 +81,7 @@ public class AlmacenPuntuacionesXML_SAX implements AlmacenPuntuaciones{
                 cadena.setLength(0);
                 if (nombreLocal.equals("puntuacion")) {
                     puntuacion = new Puntuacion();
-                    puntuacion.fecha = Long.parseLong(atr.getValue("fecha"));
+                    puntuacion.setFecha(Long.parseLong(atr.getValue("fecha")));
                 }
             }
             @Override
@@ -96,9 +91,9 @@ public class AlmacenPuntuacionesXML_SAX implements AlmacenPuntuaciones{
             @Override
             public void endElement(String uri, String nombreLocal,
                                    String nombreCualif) throws SAXException {
-                if (nombreLocal.equals("puntos")) {puntuacion.puntos = Integer.parseInt(cadena.toString());
+                if (nombreLocal.equals("puntos")) {puntuacion.setPuntos(Integer.parseInt(cadena.toString()));
                 } else if (nombreLocal.equals("nombre")) {
-                    puntuacion.nombre = cadena.toString();
+                    puntuacion.setNombre(cadena.toString());
                 } else if (nombreLocal.equals("puntuacion")) {
                     listaPuntuaciones.add(puntuacion);
                 }
@@ -111,16 +106,13 @@ public class AlmacenPuntuacionesXML_SAX implements AlmacenPuntuaciones{
             listaPuntuaciones = new ArrayList<Puntuacion>();
         }
         public void nuevo(int puntos, String nombre, long fecha) {
-            Puntuacion puntuacion = new Puntuacion();
-            puntuacion.puntos = puntos;
-            puntuacion.nombre = nombre;
-            puntuacion.fecha = fecha;
+            Puntuacion puntuacion = new Puntuacion(puntos,nombre,fecha);
             listaPuntuaciones.add(puntuacion);
         }
         public List<String> aListString() {
             List<String> result = new ArrayList<String>();
             for (Puntuacion puntuacion : listaPuntuaciones) {
-                result.add(puntuacion.nombre+" "+puntuacion.puntos);
+                result.add(puntuacion.getNombre()+" "+puntuacion.getPuntos());
             }
             return result;
         }
@@ -142,12 +134,12 @@ public class AlmacenPuntuacionesXML_SAX implements AlmacenPuntuaciones{
                 for (Puntuacion puntuacion : listaPuntuaciones) {
                     serializador.startTag("", "puntuacion");
                     serializador.attribute("", "fecha",
-                            String.valueOf(puntuacion.fecha));
+                            String.valueOf(puntuacion.getFecha()));
                     serializador.startTag("", "nombre");
-                    serializador.text(puntuacion.nombre);
+                    serializador.text(puntuacion.getNombre());
                     serializador.endTag("", "nombre");
                     serializador.startTag("", "puntos");
-                    serializador.text(String.valueOf(puntuacion.puntos));
+                    serializador.text(String.valueOf(puntuacion.getPuntos()));
                     serializador.endTag("", "puntos");
                     serializador.endTag("", "puntuacion");
                 }

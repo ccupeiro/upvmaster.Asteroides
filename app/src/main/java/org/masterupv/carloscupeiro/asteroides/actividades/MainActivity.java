@@ -10,6 +10,7 @@ import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
 import android.media.MediaPlayer;
+import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -35,10 +36,14 @@ import org.masterupv.carloscupeiro.asteroides.R;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesFicheroExtApl;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesFicheroExterno;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesFicheroInterno;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesGSon;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesJSon;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesPreferencias;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesRecursoAssets;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesRecursoRaw;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesSQLite;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesSQLiteRel;
+import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesSW_PHP;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesSocket;
 import org.masterupv.carloscupeiro.asteroides.entidades.AlmacenPuntuacionesXML_SAX;
 
@@ -47,6 +52,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements GestureOverlayView.OnGesturePerformedListener {
     public static final int COD_PLAY = 1234;
     private static final int SOLICITUD_PERMISO_ESCRITURA_EXTERNA = 0;
+    private static final String RUTA_UPV="http://158.42.146.127/puntuaciones";
+    private static final String RUTA_MIA="http://158.42.146.127/puntuaciones";
 
     static AlmacenPuntuaciones almacen;
     private GestureLibrary libreria;
@@ -57,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().
+                permitNetwork().build());
         final MediaPlayer mp_play = MediaPlayer.create(this, R.raw.play);
         SharedPreferences pref =
                 PreferenceManager.getDefaultSharedPreferences(this);
@@ -207,6 +216,21 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
                 break;
             case 9:
                 almacen = new AlmacenPuntuacionesSocket();
+                break;
+            case 10:
+                almacen = new AlmacenPuntuacionesSW_PHP(RUTA_UPV);
+                break;
+            case 11:
+                almacen = new AlmacenPuntuacionesSW_PHP(RUTA_MIA);
+                break;
+            case 12:
+                almacen = new AlmacenPuntuacionesGSon();
+                break;
+            case 13:
+                almacen = new AlmacenPuntuacionesJSon();
+                break;
+            case 14:
+                almacen = new AlmacenPuntuacionesSQLiteRel(this);
                 break;
         }
     }

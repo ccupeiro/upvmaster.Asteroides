@@ -22,6 +22,10 @@
         <item>Almacen en SQLite</item>
         <item>Almacen por Socket</item>
         <item>Almacen Servidor PHP</item>
+        <item>Almacen Servidor PHP Mio</item>
+        <item>Almacen con Gson</item>
+        <item>Almacen con Json</item>
+        <item>Almacen con SQLite Relacional</item>
     </string-array>
     <string-array name="tiposGuardadoValores">
         <item>0</item>
@@ -35,6 +39,10 @@
         <item>8</item>
         <item>9</item>
         <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
     </string-array>
     <string-array name="tiposConexion">
         <item>Bluetooth</item>
